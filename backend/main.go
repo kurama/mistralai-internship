@@ -18,6 +18,18 @@ type ChatResponse struct {
 	Reply string `json:"reply"`
 }
 
+// CORS middleware
+func enableCORS(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+}
+
 func main() {
 	// Load the .env file
 	_ = godotenv.Load()
@@ -26,15 +38,24 @@ func main() {
 	if apiKey == "" {
 		log.Fatal("MISTRAL_API_KEY is not set")
 	}
-
 	client := mistral.NewMistralClientDefault(apiKey)
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r)
+		if r.Method == "OPTIONS" {
+			return
+		}
+		
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	})
 
 	http.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r)
+		if r.Method == "OPTIONS" {
+			return
+		}
+
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -46,13 +67,25 @@ func main() {
 			return
 		}
 
+		if req.Message == "" {
+			http.Error(w, "Message is required", http.StatusBadRequest)
+			return
+		}
+
 		chatRes, err := client.Chat(
 			"mistral-tiny",
 			[]mistral.ChatMessage{{Content: req.Message, Role: mistral.RoleUser}},
-			nil,
+			&mistral.ChatRequestParams{
+				Temperature: 1,
+				TopP:        1,
+				RandomSeed:  42069,
+				MaxTokens:   120,
+				SafePrompt:  false,
+			},
 		)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Printf("Mistral API error: %v", err)
+			http.Error(w, "Failed to get response from AI", http.StatusInternalServerError)
 			return
 		}
 
@@ -63,7 +96,11 @@ func main() {
 
 		resp := ChatResponse{Reply: reply}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(resp)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("JSON encoding error: %v", err)
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
+		}
 	})
 
 	log.Println("Backend running on :8080")
