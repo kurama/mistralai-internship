@@ -22,7 +22,7 @@ export default function ChatInput() {
   }
 
   return (
-    <div className="flex flex-col w-full max-w-2xl">
+    <>
       {/* Response bubble */}
       {response && !error && (
         <motion.div initial={{ opacity: 0, y: 20, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.3, ease: 'easeOut' }} className="p-4 rounded-2xl">
@@ -46,10 +46,10 @@ export default function ChatInput() {
       />
 
       {/* Input area */}
-      <form onSubmit={handleSubmit} className="bg-muted p-4 flex flex-col rounded-2xl gap-4 min-w-[500px]">
+      <form onSubmit={handleSubmit} className="bg-muted p-4 flex flex-col rounded-2xl gap-4 w-full sm:w-[400px] md:w-[600px]">
         <AutosizeTextarea
           placeholder="Ask anything"
-          className="min-w-[300px] w-full border-0 bg-muted text-white resize-none"
+          className="w-full border-0 bg-muted text-white resize-none"
           maxHeight={200}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -74,6 +74,6 @@ export default function ChatInput() {
           </motion.div>
         </div>
       </form>
-    </div>
+    </>
   )
 }

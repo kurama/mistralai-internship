@@ -151,16 +151,9 @@
   position: absolute;
   z-index: -1;
 }
-.thought:before {
-  width: 44px;
-  height: 44px;
-  top: -12px;
-  left: 28px;
-  box-shadow: -50px 30px 0 -12px var(--foreground);
-}
 .thought:after {
   bottom: -10px;
-  right: 26px;
+  left: 26px;
   width: 30px;
   height: 30px;
   box-shadow: 40px -34px 0 0 var(--foreground), -28px -6px 0 -2px var(--foreground), -24px 17px 0 -6px var(--foreground), -5px 25px 0 -10px var(--foreground);
