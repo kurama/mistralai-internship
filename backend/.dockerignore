@@ -1,0 +1,31 @@
+# Go build artifacts
+/bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go modules cache
+/pkg/mod
+/go/pkg
+
+# Logs
+*.log
+
+# Dependency / vendoring
+vendor/
+
+# Editor / IDE files
+.vscode/
+.idea/
+*.swp
+
+# Git
+.git
+.gitignore
+
+# Env files (ne pas embarquer les secrets)
+.env
