@@ -15,15 +15,13 @@ export default function Footer() {
       }}
     >
       Made with 🧡 by{' '}
-      <motion.a
+      <a
         className="hover:underline hover:text-primary"
         href="https://github.com/kurama"
         target="_blank"
-        whileHover={{ scale: 1.05 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 10 }}
       >
         Dorian Grasset
-      </motion.a>
+      </a>
     </motion.footer>
   )
 }
