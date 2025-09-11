@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mistralai-internship.fullname" . }}-frontend
+spec:
+  type: {{ .Values.frontend.service.type }}
+  selector:
+    app: {{ include "mistralai-internship.name" . }}-frontend
+  ports:
+    - port: {{ .Values.frontend.service.port }}
+      targetPort: {{ .Values.frontend.port }}

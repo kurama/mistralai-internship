@@ -1,0 +1,27 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "mistralai-internship.fullname" . }}
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.className }}
+spec:
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "mistralai-internship.fullname" . }}-frontend
+                port:
+                  number: 80
+          - path: /chat
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "mistralai-internship.fullname" . }}-backend
+                port:
+                  number: 80
+{{- end }}

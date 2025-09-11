@@ -1,0 +1,21 @@
+backend:
+  image: "rapidement/mistralai-internship-backend"
+  tag: "latest"
+  port: 8080
+  service:
+    type: ClusterIP
+    port: 80
+
+frontend:
+  image: "rapidement/mistralai-internship-frontend"
+  tag: "latest"
+  port: 3000
+  service:
+    type: ClusterIP
+    port: 80
+
+
+ingress:
+  enabled: true
+  className: "nginx"
+  host: "mistral.local"
