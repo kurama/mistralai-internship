@@ -13,7 +13,8 @@ frontend:
   service:
     type: ClusterIP
     port: 80
-
+  env:
+    apiUrl: "http://{{ .Values.ingress.host }}"
 
 ingress:
   enabled: true

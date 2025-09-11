@@ -16,12 +16,12 @@ spec:
               service:
                 name: {{ include "mistralai-internship.fullname" . }}-frontend
                 port:
-                  number: 80
+                  number: 3000
           - path: /chat
             pathType: Prefix
             backend:
               service:
                 name: {{ include "mistralai-internship.fullname" . }}-backend
                 port:
-                  number: 80
+                  number: 8080
 {{- end }}

@@ -17,3 +17,6 @@ spec:
           image: "{{ .Values.frontend.image }}:{{ .Values.frontend.tag }}"
           ports:
             - containerPort: {{ .Values.frontend.port }}
+          env:
+          - name: NEXT_PUBLIC_API_URL
+            value: "http://{{ .Values.ingress.host }}"

@@ -23,3 +23,18 @@ spec:
                 secretKeyRef:
                   name: mistral-secrets
                   key: api-key
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m" 
+              memory: "256Mi"
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8080
