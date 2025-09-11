@@ -31,7 +31,6 @@ func enableCORS(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// Load the .env file
 	_ = godotenv.Load()
 
 	apiKey := os.Getenv("MISTRAL_API_KEY")
