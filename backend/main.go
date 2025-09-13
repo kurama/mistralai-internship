@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -19,6 +20,11 @@ type ChatRequest struct {
 
 type ChatResponse struct {
     Reply string `json:"reply"`
+}
+
+type ErrorResponse struct {
+    Error string `json:"error"`
+    Code  string `json:"code,omitempty"`
 }
 
 // Rate limiting for free tier
@@ -122,11 +128,18 @@ func main() {
 
         // Determine which API key to use
         apiKeyToUse := req.ApiKey
+        isUsingCustomKey := apiKeyToUse != ""
+        
         if apiKeyToUse == "" {
             // Using default API key - check rate limiting
             clientIP := getClientIP(r)
             if isRateLimited(clientIP) {
-                http.Error(w, "Rate limit exceeded. Please sign in to continue.", http.StatusTooManyRequests)
+                w.Header().Set("Content-Type", "application/json")
+                w.WriteHeader(http.StatusTooManyRequests)
+                json.NewEncoder(w).Encode(ErrorResponse{
+                    Error: "Rate limit exceeded. Please sign in to continue.",
+                    Code:  "RATE_LIMIT_EXCEEDED",
+                })
                 return
             }
             apiKeyToUse = defaultApiKey
@@ -147,7 +160,29 @@ func main() {
         )
         if err != nil {
             log.Printf("Mistral API error: %v", err)
-            http.Error(w, "Failed to get response from AI", http.StatusInternalServerError)
+            
+            // Check if it's an API key error
+            errorStr := err.Error()
+            if isUsingCustomKey && (strings.Contains(errorStr, "401") || 
+                strings.Contains(errorStr, "unauthorized") || 
+                strings.Contains(errorStr, "invalid") ||
+                strings.Contains(errorStr, "authentication")) {
+                w.Header().Set("Content-Type", "application/json")
+                w.WriteHeader(http.StatusUnauthorized)
+                json.NewEncoder(w).Encode(ErrorResponse{
+                    Error: "Invalid API key. Please check your Mistral API key and try again.",
+                    Code:  "INVALID_API_KEY",
+                })
+                return
+            }
+            
+            // Generic error
+            w.Header().Set("Content-Type", "application/json")
+            w.WriteHeader(http.StatusInternalServerError)
+            json.NewEncoder(w).Encode(ErrorResponse{
+                Error: "Unable to process your request. Please try again later.",
+                Code:  "API_ERROR",
+            })
             return
         }
 
@@ -160,7 +195,12 @@ func main() {
         w.Header().Set("Content-Type", "application/json")
         if err := json.NewEncoder(w).Encode(resp); err != nil {
             log.Printf("JSON encoding error: %v", err)
-            http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+            w.Header().Set("Content-Type", "application/json")
+            w.WriteHeader(http.StatusInternalServerError)
+            json.NewEncoder(w).Encode(ErrorResponse{
+                Error: "Failed to process response",
+                Code:  "ENCODING_ERROR",
+            })
             return
         }
     })
