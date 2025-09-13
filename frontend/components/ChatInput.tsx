@@ -3,8 +3,10 @@
 import { motion } from 'framer-motion'
 import { AutosizeTextarea } from '@/components/ui/autosizetextarea'
 import { Button } from '@/components/ui/button'
-import { Send, LoaderCircle, RotateCcw } from 'lucide-react'
+import { Send, LoaderCircle, RotateCcw, Info } from 'lucide-react'
 import { useChat } from '@/hooks/useChat'
+import { Input } from './ui/input'
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 
 export default function ChatInput() {
   const { message, setMessage, response, isLoading, error, sendMessage, clearResponse } = useChat()
@@ -57,21 +59,46 @@ export default function ChatInput() {
           disabled={isLoading}
         />
         <div className="w-full flex justify-end gap-2">
+          <div className="flex flex-row gap-2 items-center w-full">
+            {/* Send button */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <motion.div whileHover={!isLoading ? { scale: 1.05 } : {}} whileTap={!isLoading ? { scale: 0.95 } : {}}>
+                  <Button variant="outline" size="icon">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              </TooltipTrigger>
+              <TooltipContent>Info</TooltipContent>
+            </Tooltip>
+            <Input placeholder="Enter your API KEY" name="chat" />
+          </div>
+
           {/* Clear/Refresh button */}
           {(response || error) && (
-            <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.2 }} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button variant="outline" size="icon" onClick={clearResponse} disabled={isLoading}>
-                <RotateCcw className="h-4 w-4" />
-              </Button>
-            </motion.div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.2 }} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button variant="outline" size="icon" onClick={clearResponse} disabled={isLoading}>
+                    <RotateCcw className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              </TooltipTrigger>
+              <TooltipContent>Reset chat</TooltipContent>
+            </Tooltip>
           )}
 
           {/* Send button */}
-          <motion.div whileHover={!isLoading ? { scale: 1.05 } : {}} whileTap={!isLoading ? { scale: 0.95 } : {}}>
-            <Button type="submit" variant="default" size="icon" disabled={isLoading || !message.trim()}>
-              {isLoading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-            </Button>
-          </motion.div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <motion.div whileHover={!isLoading ? { scale: 1.05 } : {}} whileTap={!isLoading ? { scale: 0.95 } : {}}>
+                <Button type="submit" variant="default" size="icon" disabled={isLoading || !message.trim()}>
+                  {isLoading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                </Button>
+              </motion.div>
+            </TooltipTrigger>
+            <TooltipContent>Send chat</TooltipContent>
+          </Tooltip>
         </div>
       </form>
     </>
