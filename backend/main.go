@@ -14,8 +14,9 @@ import (
 )
 
 type ChatRequest struct {
-    Message string `json:"message"`
-    ApiKey  string `json:"apiKey,omitempty"` // Optional API key
+    Message      string `json:"message"`
+    ApiKey       string `json:"apiKey,omitempty"`
+    IsSignedIn   bool   `json:"isSignedIn,omitempty"`
 }
 
 type ChatResponse struct {
@@ -131,7 +132,18 @@ func main() {
         isUsingCustomKey := apiKeyToUse != ""
         
         if apiKeyToUse == "" {
-            // Using default API key - check rate limiting
+            // If user is signed in but has no API key, show API key error
+            if req.IsSignedIn {
+                w.Header().Set("Content-Type", "application/json")
+                w.WriteHeader(http.StatusUnauthorized)
+                json.NewEncoder(w).Encode(ErrorResponse{
+                    Error: "Invalid API key. Please check your Mistral API key and try again.",
+                    Code:  "INVALID_API_KEY",
+                })
+                return
+            }
+            
+            // Using default API key - check rate limiting for non-signed users
             clientIP := getClientIP(r)
             if isRateLimited(clientIP) {
                 w.Header().Set("Content-Type", "application/json")
