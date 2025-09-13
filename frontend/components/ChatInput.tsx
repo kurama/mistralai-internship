@@ -14,9 +14,7 @@ interface ChatInputProps {
 }
 
 export default function ChatInput({ showApiKeyInput = false }: ChatInputProps) {
-  const { message, setMessage, response, isLoading, error, sendMessage, clearResponse, apiKey, setApiKey, showRateLimitWarning } = useChat()
-
-  const { status } = useSession()
+  const { message, setMessage, response, isLoading, error, sendMessage, clearResponse, apiKey, setApiKey } = useChat()
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault()
@@ -38,13 +36,6 @@ export default function ChatInput({ showApiKeyInput = false }: ChatInputProps) {
           <div className="thought">
             <div className="text-background whitespace-pre-wrap">{response}</div>
           </div>
-        </motion.div>
-      )}
-
-      {/* Rate limit warning - persistent yellow warning */}
-      {showRateLimitWarning && status === 'unauthenticated' && (
-        <motion.div initial={{ opacity: 0, y: 20, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.3, ease: 'easeOut' }} className="p-4 rounded-2xl">
-          <div className="mb-4 p-3 bg-yellow-500/10 border text-sm border-yellow-500/20 rounded-lg text-yellow-200">You have 3 free messages per hour. Please sign in for unlimited access.</div>
         </motion.div>
       )}
 

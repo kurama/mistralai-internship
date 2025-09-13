@@ -52,7 +52,9 @@ export function useChat(): UseChatReturn {
 
       try {
         const keyToUse = customApiKey || apiKey
-        const result = await chatService.sendMessage(message.trim(), keyToUse)
+        const isSignedIn = status === 'authenticated'
+
+        const result = await chatService.sendMessage(message.trim(), keyToUse, isSignedIn)
         setResponse(result.reply)
         setMessage('')
         setShowRateLimitWarning(false) // Reset warning on success
