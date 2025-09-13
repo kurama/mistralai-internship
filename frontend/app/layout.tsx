@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Mistral Internship',
-  description: 'A simple Next.js app for Mistral internship',
+  title: 'Mistral Internship Application - Dorian Grasset',
+  description: 'A simple Next.js app for Mistral internship application',
 }
 
 export default function RootLayout({
