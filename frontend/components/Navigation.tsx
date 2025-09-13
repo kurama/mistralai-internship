@@ -10,13 +10,13 @@ const navigationItems = [
     href: 'https://github.com/kurama',
     icon: <Github color="white" />,
     tooltip: 'GitHub',
-    delay: 0.2,
+    delay: 0.4,
   },
   {
     href: 'https://docs.mistral.ai/',
     icon: <BookOpenText color="white" />,
     tooltip: 'Documentation',
-    delay: 0.4,
+    delay: 0.6,
   },
   {
     href: 'https://chat.mistral.ai/chat',
@@ -29,7 +29,7 @@ const navigationItems = [
       </svg>
     ),
     tooltip: 'Le Chat',
-    delay: 0.6,
+    delay: 0.8,
   },
 ]
 

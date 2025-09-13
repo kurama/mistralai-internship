@@ -1,6 +1,10 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
+import SessionProviderWrapper from '@/components/SessionProviderWrapper'
+import { InteractiveGridPattern } from '@/components/magicui/interactive-grid-pattern'
+import { cn } from '@/lib/utils'
+import { Toaster } from '@/components/ui/sonner'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -24,7 +28,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased relative flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden rounded-lg`}>
+        <SessionProviderWrapper>{children}</SessionProviderWrapper>
+        <InteractiveGridPattern
+          className={cn('[mask-image:radial-gradient(900px_circle_at_center,white,transparent)]', 'absolute inset-0 h-full w-full -z-50')}
+          squares={[50, 50]}
+          width={50}
+          height={50}
+          squaresClassName="hover:fill-secondary"
+        />
+        <Toaster />
+      </body>
     </html>
   )
 }

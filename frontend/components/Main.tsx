@@ -1,9 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import ChatInput from './chatInput'
+import ChatInput from './ChatInput'
 
-export default function MainContent() {
+export default function Main() {
   return (
     <motion.main
       className="z-10 flex flex-col items-center justify-start p-4"
