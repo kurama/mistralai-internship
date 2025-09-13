@@ -1,57 +1,94 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { LogOut } from 'lucide-react'
+import { LogOut, LogIn } from 'lucide-react'
 import Navigation from './Navigation'
 import { Button } from './ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import { useSession } from 'next-auth/react'
+import { Badge } from './ui/badge'
+import { Sparkles } from 'lucide-react'
+import Link from 'next/link'
 
 interface HeaderProps {
-  onLogout: () => void
+  onLogout?: () => void
+  showAuthButton?: boolean
 }
 
-export default function Header({ onLogout }: HeaderProps) {
-  const { data: session } = useSession()
-
+export default function Header({ onLogout, showAuthButton = false }: HeaderProps) {
   return (
-    <header className="z-10 absolute top-0 p-4 flex sm:flex-row flex-col gap-4 justify-between w-full">
-      <motion.div className="flex flex-row gap-4 items-center" initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6, ease: 'easeOut' }}>
-        <motion.div
-          initial={{ y: -50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{
-            duration: 0.6,
-            ease: 'easeOut',
-            delay: 0.2,
-          }}
-        >
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant={'outline'} size={'icon'} asChild onClick={onLogout}>
-                <div>
-                  <LogOut color="white" className="w-4 h-4" />
-                </div>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Log Out</p>
-            </TooltipContent>
-          </Tooltip>
-        </motion.div>
-        <motion.div
-          initial={{ y: -50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{
-            duration: 0.6,
-            ease: 'easeOut',
-            delay: 0.4,
-          }}
-        >
-          {session?.user?.email && <p className="text-sm">{session.user.email}</p>}
-        </motion.div>
+    <motion.header
+      className="z-10 absolute top-0 p-4 flex flex-row justify-between items-center w-full"
+      initial={{ y: -50, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{
+        duration: 0.8,
+        ease: 'easeOut',
+      }}
+    >
+      <motion.div
+        className="flex flex-row gap-4 items-center"
+        initial={{ x: -30, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{
+          duration: 0.6,
+          ease: 'easeOut',
+          delay: 0.2,
+        }}
+      >
+        <Badge variant="outline" className="flex flex-row gap-1 items-center">
+          <Sparkles size={12} />
+          Mistral AI Application
+        </Badge>
       </motion.div>
-      <Navigation />
-    </header>
+
+      <div className="flex flex-row gap-4 items-center">
+        <Navigation />
+
+        {showAuthButton && (
+          <motion.div
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{
+              duration: 0.6,
+              ease: 'easeOut',
+              delay: 1,
+            }}
+          >
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href="/auth">
+                  <Button variant="outline" size="icon">
+                    <LogIn className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Sign In</TooltipContent>
+            </Tooltip>
+          </motion.div>
+        )}
+
+        {onLogout && (
+          <motion.div
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{
+              duration: 0.6,
+              ease: 'easeOut',
+              delay: 1,
+            }}
+          >
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="icon" onClick={onLogout}>
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Logout</TooltipContent>
+            </Tooltip>
+          </motion.div>
+        )}
+      </div>
+    </motion.header>
   )
 }

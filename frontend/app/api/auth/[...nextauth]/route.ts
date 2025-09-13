@@ -26,7 +26,6 @@ const handler = NextAuth({
         return false
       }
 
-      // Database connection test
       let client
       try {
         console.log('📡 Connecting to database...')
@@ -43,7 +42,7 @@ const handler = NextAuth({
         }
       } catch (error) {
         console.error('❌ Database error:', error)
-        return false // Login fails if DB problem
+        return false
       } finally {
         if (client) {
           client.release()
@@ -52,6 +51,22 @@ const handler = NextAuth({
 
       console.log('✅ Login authorized for:', user.email)
       return true
+    },
+    async session({ session, token }) {
+      if (session?.user?.email) {
+        const client = await pool.connect()
+        try {
+          const res = await client.query('SELECT id FROM users WHERE email = $1', [session.user.email])
+          if ((res.rowCount ?? 0) > 0) {
+            session.user.id = res.rows[0].id
+          }
+        } catch (error) {
+          console.error('Error getting user ID for session:', error)
+        } finally {
+          client.release()
+        }
+      }
+      return session
     },
   },
 })
