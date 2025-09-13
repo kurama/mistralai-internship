@@ -9,10 +9,11 @@ export interface UseChatReturn {
   response: string | null
   isLoading: boolean
   error: string | null
-  sendMessage: (apiKey?: string) => Promise<void>
+  sendMessage: (customApiKey?: string) => Promise<void>
   clearResponse: () => void
   apiKey: string
   setApiKey: (key: string) => void
+  showRateLimitWarning: boolean
 }
 
 export function useChat(): UseChatReturn {
@@ -21,6 +22,7 @@ export function useChat(): UseChatReturn {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [apiKey, setApiKey] = useState('')
+  const [showRateLimitWarning, setShowRateLimitWarning] = useState(false)
   const { data: session, status } = useSession()
 
   // Load API key when user is authenticated
@@ -52,7 +54,8 @@ export function useChat(): UseChatReturn {
         const keyToUse = customApiKey || apiKey
         const result = await chatService.sendMessage(message.trim(), keyToUse)
         setResponse(result.reply)
-        setMessage('') // Clear input after successful response
+        setMessage('')
+        setShowRateLimitWarning(false) // Reset warning on success
 
         // Save API key if request was successful and user is authenticated
         if (keyToUse && status === 'authenticated' && session?.user) {
@@ -60,16 +63,19 @@ export function useChat(): UseChatReturn {
             await chatService.saveApiKey(keyToUse)
           } catch (error) {
             console.error('Failed to save API key:', error)
-            // Don't show error to user for API key saving failure
           }
         }
       } catch (err) {
         if (err instanceof ApiError) {
-          if (err.status === 429) {
+          if (err.code === 'RATE_LIMIT_EXCEEDED') {
             setError('Rate limit exceeded. Please sign in to continue.')
+            setShowRateLimitWarning(true)
             toast.error('Rate limit exceeded. Please sign in to continue.')
+          } else if (err.code === 'INVALID_API_KEY') {
+            setError('Invalid API key. Please check your Mistral API key and try again.')
+            toast.error('Invalid API key. Please check your Mistral API key and try again.')
           } else {
-            setError(`Error ${err.status}: ${err.message}`)
+            setError(err.message)
             toast.error(err.message)
           }
         } else {
@@ -88,6 +94,7 @@ export function useChat(): UseChatReturn {
   const clearResponse = useCallback(() => {
     setResponse(null)
     setError(null)
+    setShowRateLimitWarning(false)
   }, [])
 
   return {
@@ -100,5 +107,6 @@ export function useChat(): UseChatReturn {
     clearResponse,
     apiKey,
     setApiKey,
+    showRateLimitWarning,
   }
 }

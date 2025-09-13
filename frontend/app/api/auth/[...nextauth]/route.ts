@@ -8,6 +8,24 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 })
 
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string
+      name?: string | null
+      email?: string | null
+      image?: string | null
+    }
+  }
+
+  interface User {
+    id: string
+    name?: string | null
+    email?: string | null
+    image?: string | null
+  }
+}
+
 const handler = NextAuth({
   providers: [
     GithubProvider({
@@ -16,7 +34,7 @@ const handler = NextAuth({
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === 'development', // Add debug logs
+  debug: process.env.NODE_ENV === 'development',
   callbacks: {
     async signIn({ user }) {
       console.log('🔍 Login attempt for:', user.email)
@@ -58,7 +76,7 @@ const handler = NextAuth({
         try {
           const res = await client.query('SELECT id FROM users WHERE email = $1', [session.user.email])
           if ((res.rowCount ?? 0) > 0) {
-            session.user.id = res.rows[0].id
+            session.user.id = res.rows[0].id.toString()
           }
         } catch (error) {
           console.error('Error getting user ID for session:', error)
