@@ -3,6 +3,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
 export interface ChatRequest {
   message: string
   apiKey?: string
+  isSignedIn?: boolean
 }
 
 export interface ChatResponse {
@@ -22,9 +23,12 @@ export class ApiError extends Error {
 }
 
 export const chatService = {
-  async sendMessage(message: string, apiKey?: string): Promise<ChatResponse> {
+  async sendMessage(message: string, apiKey?: string, isSignedIn: boolean = false): Promise<ChatResponse> {
     try {
-      const body: ChatRequest = { message }
+      const body: ChatRequest = {
+        message,
+        isSignedIn,
+      }
       if (apiKey) {
         body.apiKey = apiKey
       }
