@@ -8,8 +8,12 @@ import { useChat } from '@/hooks/useChat'
 import { Input } from './ui/input'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 
-export default function ChatInput() {
-  const { message, setMessage, response, isLoading, error, sendMessage, clearResponse } = useChat()
+interface ChatInputProps {
+  showApiKeyInput?: boolean
+}
+
+export default function ChatInput({ showApiKeyInput = false }: ChatInputProps) {
+  const { message, setMessage, response, isLoading, error, sendMessage, clearResponse, apiKey, setApiKey } = useChat()
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault()
@@ -31,6 +35,13 @@ export default function ChatInput() {
           <div className="thought">
             <div className="text-background whitespace-pre-wrap">{response}</div>
           </div>
+        </motion.div>
+      )}
+
+      {/* Error display */}
+      {error && (
+        <motion.div initial={{ opacity: 0, y: 20, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.3, ease: 'easeOut' }} className="p-4 rounded-2xl">
+          <div className="mb-4 p-3 bg-red-500/10 border text-sm border-red-500/20 rounded-lg text-red-200">{error}</div>
         </motion.div>
       )}
 
@@ -58,22 +69,23 @@ export default function ChatInput() {
           onKeyDown={handleKeyDown}
           disabled={isLoading}
         />
-        <div className="w-full flex justify-end gap-2">
-          <div className="flex flex-row gap-2 items-center w-full">
-            {/* Send button */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <motion.div whileHover={!isLoading ? { scale: 1.05 } : {}} whileTap={!isLoading ? { scale: 0.95 } : {}}>
-                  <Button variant="outline" size="icon">
-                    <Info className="h-4 w-4" />
-                  </Button>
-                </motion.div>
-              </TooltipTrigger>
-              <TooltipContent>Info</TooltipContent>
-            </Tooltip>
-            <Input placeholder="Enter your API KEY" name="chat" />
-          </div>
 
+        <div className="w-full flex justify-end gap-4">
+          {showApiKeyInput && (
+            <>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <motion.div whileHover={!isLoading ? { scale: 1.05 } : {}} whileTap={!isLoading ? { scale: 0.95 } : {}}>
+                    <Button variant="outline" size="icon" type="button">
+                      <Info className="h-4 w-4" />
+                    </Button>
+                  </motion.div>
+                </TooltipTrigger>
+                <TooltipContent>Enter your Mistral API key for unlimited access</TooltipContent>
+              </Tooltip>
+              <Input placeholder="Enter your Mistral API key" value={apiKey} onChange={(e) => setApiKey(e.target.value)} type="password" />
+            </>
+          )}
           {/* Clear/Refresh button */}
           {(response || error) && (
             <Tooltip>

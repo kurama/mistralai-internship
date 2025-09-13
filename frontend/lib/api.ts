@@ -2,6 +2,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
 
 export interface ChatRequest {
   message: string
+  apiKey?: string
 }
 
 export interface ChatResponse {
@@ -16,14 +17,19 @@ export class ApiError extends Error {
 }
 
 export const chatService = {
-  async sendMessage(message: string): Promise<ChatResponse> {
+  async sendMessage(message: string, apiKey?: string): Promise<ChatResponse> {
     try {
+      const body: ChatRequest = { message }
+      if (apiKey) {
+        body.apiKey = apiKey
+      }
+
       const response = await fetch(`${API_URL}/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message } as ChatRequest),
+        body: JSON.stringify(body),
       })
 
       if (!response.ok) {
@@ -48,6 +54,40 @@ export const chatService = {
       return response.ok
     } catch {
       return false
+    }
+  },
+
+  async saveApiKey(apiKey: string): Promise<void> {
+    try {
+      const response = await fetch('/api/user/api-key', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ apiKey }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to save API key')
+      }
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to save API key')
+    }
+  },
+
+  async getApiKey(): Promise<string | null> {
+    try {
+      const response = await fetch('/api/user/api-key')
+
+      if (!response.ok) {
+        return null
+      }
+
+      const data = await response.json()
+      return data.apiKey
+    } catch (error) {
+      console.error('Error fetching API key:', error)
+      return null
     }
   },
 }
