@@ -9,8 +9,13 @@ export interface ChatResponse {
   reply: string
 }
 
+export interface ErrorResponse {
+  error: string
+  code?: string
+}
+
 export class ApiError extends Error {
-  constructor(public status: number, message: string) {
+  constructor(public status: number, message: string, public code?: string) {
     super(message)
     this.name = 'ApiError'
   }
@@ -33,7 +38,14 @@ export const chatService = {
       })
 
       if (!response.ok) {
-        throw new ApiError(response.status, `HTTP ${response.status}: ${response.statusText}`)
+        const contentType = response.headers.get('content-type')
+
+        if (contentType && contentType.includes('application/json')) {
+          const errorData: ErrorResponse = await response.json()
+          throw new ApiError(response.status, errorData.error, errorData.code)
+        } else {
+          throw new ApiError(response.status, `HTTP ${response.status}: ${response.statusText}`)
+        }
       }
 
       const data: ChatResponse = await response.json()
