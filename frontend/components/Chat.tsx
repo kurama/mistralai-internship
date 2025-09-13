@@ -31,7 +31,7 @@ export default function Chat({ showApiKeyInput = false, showRateLimitInfo = fals
           <a href="/auth" className="underline hover:text-yellow-100">
             Sign in
           </a>{' '}
-          for unlimited access.
+          for unlimited access with your API key.
         </motion.div>
       )}
       <ChatInput showApiKeyInput={showApiKeyInput} />
