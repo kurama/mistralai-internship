@@ -91,26 +91,6 @@ frontend:
     value: "https://api.mistral.grasset.dev"
   - name: NEXTAUTH_URL
     value: "https://mistral.grasset.dev"
-  - name: NEXTAUTH_SECRET
-    valueFrom:
-      secretKeyRef:
-        name: mistral-secrets
-        key: nextauth-secret
-  - name: GITHUB_CLIENT_ID
-    valueFrom:
-      secretKeyRef:
-        name: mistral-secrets
-        key: github-client-id
-  - name: GITHUB_CLIENT_SECRET
-    valueFrom:
-      secretKeyRef:
-        name: mistral-secrets
-        key: github-client-secret
-  - name: DATABASE_URL
-    valueFrom:
-      secretKeyRef:
-        name: mistral-secrets
-        key: database-url
   resources:
     limits:
       cpu: 500m
@@ -130,12 +110,9 @@ backend:
     type: ClusterIP
     port: 8080
     targetPort: 8080
-  env:
-  - name: MISTRAL_API_KEY
-    valueFrom:
-      secretKeyRef:
-        name: mistral-secrets
-        key: mistral-api-key
+  env: []
+  apiKeySecretName: mistral-secrets
+  apiKeySecretKey: mistral-api-key
   resources:
     limits:
       cpu: 500m
@@ -147,9 +124,8 @@ backend:
 postgresql:
   enabled: true
   auth:
-    postgresPassword: ""
+    existingSecret: ""
     username: mistral
-    password: ""
     database: mistralai
   primary:
     persistence:
@@ -173,11 +149,3 @@ postgresql:
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(user_id)
           );
-
-secrets:
-  mistralApiKey: ""
-  nextauthSecret: ""
-  githubClientId: ""
-  githubClientSecret: ""
-  postgresPassword: ""
-  databaseUrl: ""
