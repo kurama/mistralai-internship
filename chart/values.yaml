@@ -1,0 +1,183 @@
+# Default values for mistral-app
+replicaCount: 1
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+  - host: mistral.grasset.dev
+    paths:
+    - path: /
+      pathType: Prefix
+      service: frontend
+  - host: api.mistral.grasset.dev
+    paths:
+    - path: /
+      pathType: Prefix
+      service: backend
+  tls:
+  - secretName: mistral-tls
+    hosts:
+    - mistral.grasset.dev
+    - api.mistral.grasset.dev
+
+resources: {}
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+volumes: []
+volumeMounts: []
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Application specific configuration
+frontend:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: rapidement/mistralai-internship-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+  env:
+  - name: NEXT_PUBLIC_API_URL
+    value: "https://api.mistral.grasset.dev"
+  - name: NEXTAUTH_URL
+    value: "https://mistral.grasset.dev"
+  - name: NEXTAUTH_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: mistral-secrets
+        key: nextauth-secret
+  - name: GITHUB_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: mistral-secrets
+        key: github-client-id
+  - name: GITHUB_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: mistral-secrets
+        key: github-client-secret
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: mistral-secrets
+        key: database-url
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+backend:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: rapidement/mistralai-internship-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+  env:
+  - name: MISTRAL_API_KEY
+    valueFrom:
+      secretKeyRef:
+        name: mistral-secrets
+        key: mistral-api-key
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: ""
+    username: mistral
+    password: ""
+    database: mistralai
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+    initdb:
+      scripts:
+        01_create_users_table.sql: |
+          CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            name VARCHAR(255),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+        02_create_user_api_keys_table.sql: |
+          CREATE TABLE IF NOT EXISTS user_api_keys (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            api_key TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(user_id)
+          );
+
+secrets:
+  mistralApiKey: ""
+  nextauthSecret: ""
+  githubClientId: ""
+  githubClientSecret: ""
+  postgresPassword: ""
+  databaseUrl: ""
