@@ -3,15 +3,15 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "chart.fullname" . }}-frontend
+  name: {{ include "mistral-app.fullname" . }}-frontend
   labels:
-    {{- include "chart.labels" . | nindent 4 }}
+    {{- include "mistral-app.labels" . | nindent 4 }}
     app.kubernetes.io/component: frontend
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "chart.fullname" . }}-frontend
+    name: {{ include "mistral-app.fullname" . }}-frontend
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
@@ -35,15 +35,15 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "chart.fullname" . }}-backend
+  name: {{ include "mistral-app.fullname" . }}-backend
   labels:
-    {{- include "chart.labels" . | nindent 4 }}
+    {{- include "mistral-app.labels" . | nindent 4 }}
     app.kubernetes.io/component: backend
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "chart.fullname" . }}-backend
+    name: {{ include "mistral-app.fullname" . }}-backend
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

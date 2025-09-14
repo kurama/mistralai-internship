@@ -1,5 +1,5 @@
 {{/*
-Expand the name of the chart.
+Expand the name of the mistral-app.
 */}}
 {{- define "mistral-app.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}

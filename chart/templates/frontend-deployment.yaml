@@ -47,25 +47,25 @@ spec:
           env:
             {{- toYaml .Values.frontend.env | nindent 12 }}
             - name: NEXTAUTH_SECRET
-                valueFrom:
+              valueFrom:
                 secretKeyRef:
-                    name: {{ .Values.secrets.nextauthSecret.name }}
-                    key: {{ .Values.secrets.nextauthSecret.key }}
+                  name: {{ .Values.secrets.nextauthSecret.name }}
+                  key: {{ .Values.secrets.nextauthSecret.key }}
             - name: GITHUB_CLIENT_ID
-                valueFrom:
+              valueFrom:
                 secretKeyRef:
-                    name: {{ .Values.secrets.githubClientId.name }}
-                    key: {{ .Values.secrets.githubClientId.key }}
+                  name: {{ .Values.secrets.githubClientId.name }}
+                  key: {{ .Values.secrets.githubClientId.key }}
             - name: GITHUB_CLIENT_SECRET
-                valueFrom:
+              valueFrom:
                 secretKeyRef:
-                    name: {{ .Values.secrets.githubClientSecret.name }}
-                    key: {{ .Values.secrets.githubClientSecret.key }}
+                  name: {{ .Values.secrets.githubClientSecret.name }}
+                  key: {{ .Values.secrets.githubClientSecret.key }}
             - name: DATABASE_URL
-                valueFrom:
+              valueFrom:
                 secretKeyRef:
-                    name: {{ .Values.secrets.databaseUrl.name }}
-                    key: {{ .Values.secrets.databaseUrl.key }}
+                  name: {{ .Values.secrets.databaseUrl.name }}
+                  key: {{ .Values.secrets.databaseUrl.key }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:

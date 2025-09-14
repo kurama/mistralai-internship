@@ -1,4 +1,4 @@
-{{- if .Values.backend.enabled }}
+{{- if .Values.backend.enabled}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -45,7 +45,9 @@ spec:
               containerPort: {{ .Values.backend.service.targetPort }}
               protocol: TCP
           env:
-            {{- toYaml .Values.backend.env | nindent 12 }}
+            {{- with .Values.backend.env }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
             - name: MISTRAL_API_KEY
               valueFrom:
                 secretKeyRef:

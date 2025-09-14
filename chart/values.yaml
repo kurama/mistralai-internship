@@ -150,20 +150,20 @@ postgresql:
 
 secrets:
   nextauthSecret:
-  - name: nextauth-secret-name
+    name: nextauth-secret-name
     key: nextauth-secret-key
 
   githubClientId:
-  - name: github-client-secret
+    name: github-client-secret
     key: github-client-id-key
   githubClientSecret:
-  - name: github-client-secret
+    name: github-client-secret
     key: github-client-secret-key
 
   databaseUrl:
-  - name: database-url-name
+    name: database-url-name
     key: database-url-key
 
   mistralApiKey:
-  - name: mistral-api-key-name
+    name: mistral-api-key-name
     key: mistral-api-key-key
