@@ -3,8 +3,6 @@
 import Chat from '@/components/Chat'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
-import { InteractiveGridPattern } from '@/components/magicui/interactive-grid-pattern'
-import { cn } from '@/lib/utils'
 
 console.log(`
 ▗▖  ▗▖▗▄▄▄▖ ▗▄▄▖▗▄▄▄▖▗▄▄▖  ▗▄▖ ▗▖        ▗▄▖ ▗▄▄▄▖
