@@ -46,6 +46,11 @@ spec:
               protocol: TCP
           env:
             {{- toYaml .Values.backend.env | nindent 12 }}
+            - name: MISTRAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.mistralApiKey.name }}
+                  key: {{ .Values.secrets.mistralApiKey.key }}
           livenessProbe:
             httpGet:
               path: /health
