@@ -35,38 +35,25 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    - host: mistral.grasset.dev
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
       http:
         paths:
-          - path: /
+          {{- range .paths }}
+          - path: {{ .path }}
             {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
             pathType: {{ .pathType }}
             {{- end }}
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}-frontend
+                name: {{ $fullName }}-{{ .service }}
                 port:
-                  number: {{ .Values.frontend.service.port }}
+                  number: {{ index $.Values .service "service" "port" }}
               {{- else }}
-              serviceName: {{ $fullName }}-frontend
-              servicePort: {{ .Values.frontend.service.port }}
+              serviceName: {{ $fullName }}-{{ .service }}
+              servicePort: {{ index $.Values .service "service" "port" }}
               {{- end }}
-    - host: api.mistral.grasset.dev
-      http:
-        paths:
-          - path: /
-            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: {{ .pathType }}
-            {{- end }}
-            backend:
-              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
-              service:
-                name: {{ $fullName }}-backend
-                port:
-                  number: {{ .Values.backend.service.port }}
-              {{- else }}
-              serviceName: {{ $fullName }}-backend
-              servicePort: {{ .Values.backend.service.port }}
-              {{- end }}
+          {{- end }}
+    {{- end }}
 {{- end }}
