@@ -136,6 +136,7 @@ postgresql:
             id SERIAL PRIMARY KEY,
             email VARCHAR(255) UNIQUE NOT NULL,
             name VARCHAR(255),
+            image VARCHAR(255),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
           );
         02_create_user_api_keys_table.sql: |

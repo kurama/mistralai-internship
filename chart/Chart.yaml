@@ -3,7 +3,7 @@ name: mistral-app
 description: A Helm chart for Mistral AI internship application
 type: application
 version: 0.1.0
-appVersion: "1.0.1"
+appVersion: "1.0.2"
 
 dependencies:
 - name: postgresql
