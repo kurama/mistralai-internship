@@ -53,6 +53,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secrets.mistralApiKey.name }}
                   key: {{ .Values.secrets.mistralApiKey.key }}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.databaseUrl.name }}
+                  key: {{ .Values.secrets.databaseUrl.backendKey }}
           livenessProbe:
             httpGet:
               path: /health
