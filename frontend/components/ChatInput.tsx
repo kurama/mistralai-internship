@@ -3,10 +3,11 @@
 import { motion } from 'framer-motion'
 import { AutosizeTextarea } from '@/components/ui/autosizetextarea'
 import { Button } from '@/components/ui/button'
-import { Send, LoaderCircle, RotateCcw, Info } from 'lucide-react'
+import { Send, LoaderCircle, RotateCcw, Info, Eye, EyeOff } from 'lucide-react'
 import { useChat } from '@/hooks/useChat'
 import { Input } from './ui/input'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
+import { useState } from 'react'
 
 interface ChatInputProps {
   showApiKeyInput?: boolean
@@ -14,6 +15,7 @@ interface ChatInputProps {
 
 export default function ChatInput({ showApiKeyInput = false }: ChatInputProps) {
   const { message, setMessage, response, isLoading, error, sendMessage, clearResponse, apiKey, setApiKey } = useChat()
+  const [showApiKey, setShowApiKey] = useState(false)
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault()
@@ -27,16 +29,15 @@ export default function ChatInput({ showApiKeyInput = false }: ChatInputProps) {
     }
   }
 
+  const toggleApiKeyVisibility = () => {
+    setShowApiKey(!showApiKey)
+  }
+
   return (
     <>
       {/* Response bubble */}
       {response && !error && (
-        <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.3, ease: 'easeOut' }}
-          className="p-8 rounded-2xl"
-        >
+        <motion.div initial={{ opacity: 0, y: 20, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.3, ease: 'easeOut' }} className="p-8 rounded-2xl">
           <div className="thought">
             <div className="text-background whitespace-pre-wrap pointer-events-auto">{response}</div>
           </div>
@@ -73,7 +74,7 @@ export default function ChatInput({ showApiKeyInput = false }: ChatInputProps) {
           disabled={isLoading}
         />
 
-        <div className="w-full flex justify-end gap-4">
+        <div className="w-full flex justify-end gap-2">
           {showApiKeyInput && (
             <>
               <Tooltip>
@@ -86,7 +87,17 @@ export default function ChatInput({ showApiKeyInput = false }: ChatInputProps) {
                 </TooltipTrigger>
                 <TooltipContent>Enter your Mistral API key for unlimited access</TooltipContent>
               </Tooltip>
-              <Input placeholder="Enter your Mistral API key" value={apiKey} onChange={(e) => setApiKey(e.target.value)} type="password" />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <motion.div whileHover={!isLoading ? { scale: 1.05 } : {}} whileTap={!isLoading ? { scale: 0.95 } : {}}>
+                    <Button variant="outline" size="icon" type="button" onClick={toggleApiKeyVisibility}>
+                      {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </motion.div>
+                </TooltipTrigger>
+                <TooltipContent>{showApiKey ? 'Hide your Mistral API Key' : 'Show your Mistral API Key'}</TooltipContent>
+              </Tooltip>
+              <Input placeholder="Enter your Mistral API key" value={apiKey} onChange={(e) => setApiKey(e.target.value)} type={showApiKey ? 'text' : 'password'} />
             </>
           )}
           {/* Clear/Refresh button */}
