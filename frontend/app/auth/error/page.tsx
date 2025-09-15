@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import Header from '@/components/Header'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -63,7 +63,7 @@ const errorMessages: Record<string, { title: string; description: string }> = {
   },
 }
 
-export default function AuthError() {
+function AuthErrorContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [error, setError] = useState<string | null>(null)
@@ -75,10 +75,6 @@ export default function AuthError() {
 
   const onHome = () => {
     router.push('/')
-  }
-
-  const onRetry = () => {
-    router.push('/auth')
   }
 
   const errorInfo = errorMessages[error || 'Default'] || errorMessages.Default
@@ -96,22 +92,40 @@ export default function AuthError() {
           delay: 0.2,
         }}
       >
-        <div className="flex flex-col gap-6 z-10">
-          <Card className="border-destructive/20">
-            <CardHeader className="text-center">
-              <CardTitle className="text-destructive">{errorInfo.title}</CardTitle>
-              <CardDescription>{errorInfo.description}</CardDescription>
-              {error && <div className="mt-2 text-xs text-muted-foreground">Error code: {error}</div>}
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" onClick={onHome} className="w-full">
-                <Home className="mr-2 h-4 w-4" />
-                Go Home
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="border-destructive/20 flex flex-col gap-6 z-10 pointer-events-auto">
+          <CardHeader className="text-center">
+            <CardTitle className="text-destructive">{errorInfo.title}</CardTitle>
+            <CardDescription>{errorInfo.description}</CardDescription>
+            {error && <div className="mt-2 text-xs text-muted-foreground">Error code: {error}</div>}
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" onClick={onHome} className="w-full">
+              <Home className="mr-2 h-4 w-4" />
+              Go Home
+            </Button>
+          </CardContent>
+        </Card>
       </motion.div>
     </div>
+  )
+}
+
+function LoadingFallback() {
+  return (
+    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+      <div className="w-full max-w-sm">
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function AuthError() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <AuthErrorContent />
+    </Suspense>
   )
 }
