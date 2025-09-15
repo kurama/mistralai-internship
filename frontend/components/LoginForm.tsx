@@ -9,10 +9,10 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ className, onLogin }: LoginFormProps) {
-  return (
-    <div className={cn('flex flex-col gap-6 z-10', className)}>
+  return ( 
+    <div className={cn('flex flex-col gap-6 z-10 pointer-events-auto', className)}>
       <Card>
-        <CardHeader>
+        <CardHeader className="text-center">
           <CardTitle>Sign in to your account</CardTitle>
           <CardDescription>Connect with your GitHub account to get started</CardDescription>
         </CardHeader>

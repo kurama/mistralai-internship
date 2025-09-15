@@ -5,8 +5,7 @@ import { motion } from 'framer-motion'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import { InteractiveGridPattern } from '@/components/magicui/interactive-grid-pattern'
-import { cn } from '@/lib/utils'
+import Header from '@/components/Header'
 
 export default function Auth() {
   const { status } = useSession()
@@ -20,6 +19,10 @@ export default function Auth() {
 
   const onLogin = () => {
     signIn('github', { callbackUrl: '/chat' })
+  }
+
+  const onHome = () => {
+    router.push('/')
   }
 
   if (status === 'loading') {
@@ -39,7 +42,8 @@ export default function Auth() {
   }
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 pointer-events-none">
+      <Header onHome={onHome} />
       <motion.div
         className="w-full max-w-sm z-10"
         initial={{ y: 50, opacity: 0 }}

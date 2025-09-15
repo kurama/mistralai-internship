@@ -15,11 +15,7 @@ export default function Footer() {
       }}
     >
       Made with 🧡 by{' '}
-      <a
-        className="hover:underline hover:text-primary"
-        href="https://github.com/kurama"
-        target="_blank"
-      >
+      <a className="hover:underline hover:text-primary pointer-events-auto" href="https://github.com/kurama" target="_blank">
         Dorian Grasset
       </a>
     </motion.footer>

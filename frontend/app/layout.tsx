@@ -31,7 +31,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased relative flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden rounded-lg`}>
         <SessionProviderWrapper>{children}</SessionProviderWrapper>
         <InteractiveGridPattern
-          className={cn('[mask-image:radial-gradient(900px_circle_at_center,white,transparent)]', 'absolute inset-0 h-full w-full -z-50')}
+          className={cn('[mask-image:radial-gradient(900px_circle_at_center,white,transparent)]', 'absolute inset-0 h-full w-full')}
           squares={[50, 50]}
           width={50}
           height={50}

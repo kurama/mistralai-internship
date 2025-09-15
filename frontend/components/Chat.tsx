@@ -22,7 +22,7 @@ export default function Chat({ showApiKeyInput = false, showRateLimitInfo = fals
     >
       {showRateLimitInfo && (
         <motion.div
-          className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-sm text-yellow-200"
+          className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-sm text-yellow-200 pointer-events-auto"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}

@@ -49,7 +49,7 @@ export default function Navigation() {
         >
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant={'outline'} size={'icon'} asChild>
+              <Button variant={'outline'} size={'icon'} className="pointer-events-auto" asChild>
                 <a href={item.href} target="_blank" rel="noopener noreferrer">
                   {item.icon}
                 </a>
