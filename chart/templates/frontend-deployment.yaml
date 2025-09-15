@@ -65,7 +65,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secrets.databaseUrl.name }}
-                  key: {{ .Values.secrets.databaseUrl.key }}
+                  key: {{ .Values.secrets.databaseUrl.frontendKey }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:

@@ -162,8 +162,9 @@ secrets:
     key: github-client-secret-key
 
   databaseUrl:
-    name: database-url-name
-    key: database-url-key
+    name: database-secrets
+    frontendKey: DATABASE_URL_FRONTEND
+    backendKey: DATABASE_URL_BACKEND
 
   mistralApiKey:
     name: mistral-api-key-name
