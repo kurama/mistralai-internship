@@ -1,16 +1,17 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
 	"os"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/gage-technologies/mistral-go"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 type ChatRequest struct {
@@ -28,11 +29,7 @@ type ErrorResponse struct {
     Code  string `json:"code,omitempty"`
 }
 
-// Rate limiting for free tier
-var (
-    ipRequests = make(map[string][]time.Time)
-    ipMutex    = sync.RWMutex{}
-)
+var db *sql.DB
 
 // CORS middleware
 func enableCORS(w http.ResponseWriter, r *http.Request) {
@@ -47,43 +44,81 @@ func enableCORS(w http.ResponseWriter, r *http.Request) {
 }
 
 func isRateLimited(ip string) bool {
-    ipMutex.Lock()
-    defer ipMutex.Unlock()
-    
     now := time.Now()
     oneHour := now.Add(-time.Hour)
-    
-    // Clean old requests
-    if requests, exists := ipRequests[ip]; exists {
-        var validRequests []time.Time
-        for _, reqTime := range requests {
-            if reqTime.After(oneHour) {
-                validRequests = append(validRequests, reqTime)
-            }
-        }
-        ipRequests[ip] = validRequests
-        
-        // Check if limit exceeded (3 requests per hour)
-        if len(validRequests) >= 3 {
-            return true
-        }
+
+    // Start a transaction to avoid race conditions
+    tx, err := db.Begin()
+    if err != nil {
+        log.Printf("Error starting transaction: %v", err)
+        return false // Fail open
     }
+    defer tx.Rollback()
+
+    // Check/retrieve the record for this IP
+    var count int
+    var windowStart time.Time
     
-    // Add current request
-    ipRequests[ip] = append(ipRequests[ip], now)
-    return false
+    err = tx.QueryRow(`
+        SELECT request_count, window_start 
+        FROM rate_limit 
+        WHERE ip_address = $1
+    `, ip).Scan(&count, &windowStart)
+    
+    if err == sql.ErrNoRows {
+        // First request from this IP - create the record
+        _, err = tx.Exec(`
+            INSERT INTO rate_limit (ip_address, request_count, window_start) 
+            VALUES ($1, 1, $2)
+        `, ip, now)
+        if err != nil {
+            log.Printf("Error inserting new rate limit: %v", err)
+            return false // Fail open
+        }
+        tx.Commit()
+        return false // Allowed (first request)
+    } else if err != nil {
+        log.Printf("Error querying rate limit: %v", err)
+        return false // Fail open
+    }
+
+    // If the 1-hour window has expired, reset
+    if windowStart.Before(oneHour) {
+        _, err = tx.Exec(`
+            UPDATE rate_limit 
+            SET request_count = 1, window_start = $1 
+            WHERE ip_address = $2
+        `, now, ip)
+        if err != nil {
+            log.Printf("Error resetting rate limit: %v", err)
+            return false // Fail open
+        }
+        tx.Commit()
+        return false // Allowed (window reset)
+    }
+
+    // Check if the limit is reached
+    if count >= 3 {
+        tx.Commit() // No need to update, just commit to release the lock
+        return true // Blocked
+    }
+
+    // Increment the counter
+    _, err = tx.Exec(`
+        UPDATE rate_limit 
+        SET request_count = request_count + 1 
+        WHERE ip_address = $1
+    `, ip)
+    if err != nil {
+        log.Printf("Error incrementing rate limit: %v", err)
+        return false // Fail open
+    }
+
+    tx.Commit()
+    return false // Allowed
 }
 
 func getClientIP(r *http.Request) string {
-    // Check X-Forwarded-For header first
-    if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-        return xff
-    }
-    // Check X-Real-IP header
-    if xri := r.Header.Get("X-Real-IP"); xri != "" {
-        return xri
-    }
-    // Fallback to RemoteAddr
     return r.RemoteAddr
 }
 
@@ -94,6 +129,24 @@ func main() {
     if defaultApiKey == "" {
         log.Fatal("MISTRAL_API_KEY is not set")
     }
+
+    databaseURL := os.Getenv("DATABASE_URL")
+    if databaseURL == "" {
+        log.Fatal("DATABASE_URL is not set")
+    }
+
+    var err error
+    db, err = sql.Open("postgres", databaseURL)
+    if err != nil {
+        log.Fatalf("Failed to connect to database: %v", err)
+    }
+    defer db.Close()
+
+    if err := db.Ping(); err != nil {
+        log.Fatalf("Failed to ping database: %v", err)
+    }
+
+    log.Println("Connected to database successfully")
 
     http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
         enableCORS(w, r)
@@ -131,7 +184,7 @@ func main() {
         apiKeyToUse := req.ApiKey
         isUsingCustomKey := apiKeyToUse != ""
         
-        if apiKeyToUse == "" {
+        if (apiKeyToUse == "") {
             // If user is signed in but has no API key, show API key error
             if req.IsSignedIn {
                 w.Header().Set("Content-Type", "application/json")
