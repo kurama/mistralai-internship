@@ -34,7 +34,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="relative flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden rounded-lg">
+    <div className="relative flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden rounded-lg pointer-events-none">
       <Header onLogout={onLogout} />
       <Chat showApiKeyInput={true} />
       <Footer />

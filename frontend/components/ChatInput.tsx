@@ -7,7 +7,6 @@ import { Send, LoaderCircle, RotateCcw, Info } from 'lucide-react'
 import { useChat } from '@/hooks/useChat'
 import { Input } from './ui/input'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
-import { useSession } from 'next-auth/react'
 
 interface ChatInputProps {
   showApiKeyInput?: boolean
@@ -32,9 +31,14 @@ export default function ChatInput({ showApiKeyInput = false }: ChatInputProps) {
     <>
       {/* Response bubble */}
       {response && !error && (
-        <motion.div initial={{ opacity: 0, y: 20, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.3, ease: 'easeOut' }} className="p-4 rounded-2xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+          className="p-8 rounded-2xl"
+        >
           <div className="thought">
-            <div className="text-background whitespace-pre-wrap">{response}</div>
+            <div className="text-background whitespace-pre-wrap pointer-events-auto">{response}</div>
           </div>
         </motion.div>
       )}
@@ -42,25 +46,23 @@ export default function ChatInput({ showApiKeyInput = false }: ChatInputProps) {
       {/* Error display */}
       {error && (
         <motion.div initial={{ opacity: 0, y: 20, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.3, ease: 'easeOut' }} className="p-4 rounded-2xl">
-          <div className="mb-4 p-3 bg-red-500/10 border text-sm border-red-500/20 rounded-lg text-red-200">{error}</div>
+          <div className="mb-4 p-3 bg-red-500/10 border text-sm border-red-500/20 rounded-lg text-red-200 pointer-events-auto">{error}</div>
         </motion.div>
       )}
 
       <motion.img
-        src="cat.gif"
+        src="/cat.gif"
         alt="Mistral Cat"
-        height={256}
-        width={256}
         whileHover={{
           scale: 1.05,
           rotate: [0, -2, 2, -2, 0],
           transition: { duration: 0.5 },
         }}
-        className="cursor-pointer"
+        className="h-36 pointer-events-auto"
       />
 
       {/* Input area */}
-      <form onSubmit={handleSubmit} className="bg-muted p-4 flex flex-col rounded-2xl gap-4 w-full sm:w-[400px] md:w-[600px]">
+      <form onSubmit={handleSubmit} className="bg-muted p-4 flex flex-col rounded-2xl gap-4 w-full sm:w-[400px] md:w-[600px] pointer-events-auto">
         <AutosizeTextarea
           placeholder="Ask anything"
           className="w-full border-0 bg-muted text-white resize-none"
