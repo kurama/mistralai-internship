@@ -34,6 +34,10 @@ const handler = NextAuth({
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    error: '/auth/error',
+    signIn: '/auth',
+  },
   debug: process.env.NODE_ENV === 'development',
   callbacks: {
     async signIn({ user }) {
