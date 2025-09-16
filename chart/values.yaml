@@ -91,6 +91,8 @@ frontend:
     value: "https://api.mistral.grasset.dev"
   - name: NEXTAUTH_URL
     value: "https://mistral.grasset.dev"
+  - name: NEXT_PUBLIC_ENVIRONMENT
+    value: "production"
   resources:
     limits:
       cpu: 500m

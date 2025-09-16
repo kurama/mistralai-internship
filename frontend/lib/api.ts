@@ -1,4 +1,6 @@
-const API_URL = process.env.NODE_ENV === 'production' ? 'https://api.mistral.grasset.dev' : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
+const API_URL = process.env.NEXT_PUBLIC_ENVIRONMENT === 'development'
+  ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
+  : 'https://api.mistral.grasset.dev'
 
 export interface ChatRequest {
   message: string
