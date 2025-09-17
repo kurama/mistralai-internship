@@ -16,9 +16,24 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
+const url: URL = new URL('https://mistral.grasset.dev')
+
 export const metadata: Metadata = {
+  applicationName: 'Dorian Grasset Mistral Internship Application',
   title: 'Mistral Internship Application - Dorian Grasset',
-  description: 'A simple Next.js app for Mistral internship application',
+  description: 'A chat app for Mistral internship application',
+  metadataBase: url,
+  openGraph: {
+    title: 'Mistral Internship Application - Dorian Grasset',
+    description: 'A chat app for Mistral internship application',
+    type: 'website',
+    url: url,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Mistral Internship Application - Dorian Grasset',
+    description: 'A chat app for Mistral internship application',
+  },
 }
 
 export default function RootLayout({

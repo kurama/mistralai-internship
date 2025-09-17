@@ -79,13 +79,18 @@ export default function ChatInput({ showApiKeyInput = false }: ChatInputProps) {
           {showApiKeyInput && (
             <>
               <Dialog>
-                <DialogTrigger asChild>
-                  <motion.div whileHover={!isLoading ? { scale: 1.05 } : {}} whileTap={!isLoading ? { scale: 0.95 } : {}}>
-                    <Button variant="outline" size="icon" type="button">
-                      <Info className="h-4 w-4" />
-                    </Button>
-                  </motion.div>
-                </DialogTrigger>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DialogTrigger asChild>
+                      <motion.div whileHover={!isLoading ? { scale: 1.05 } : {}} whileTap={!isLoading ? { scale: 0.95 } : {}}>
+                        <Button variant="outline" size="icon" type="button" className="cursor-pointer">
+                          <Info className="h-4 w-4" />
+                        </Button>
+                      </motion.div>
+                    </DialogTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>Why do I need to provide an API key?</TooltipContent>
+                </Tooltip>
                 <DialogContent className="">
                   <DialogHeader>
                     <DialogTitle>API Key Information</DialogTitle>
@@ -103,7 +108,7 @@ export default function ChatInput({ showApiKeyInput = false }: ChatInputProps) {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <motion.div whileHover={!isLoading ? { scale: 1.05 } : {}} whileTap={!isLoading ? { scale: 0.95 } : {}}>
-                    <Button variant="outline" size="icon" type="button" onClick={toggleApiKeyVisibility}>
+                    <Button variant="outline" size="icon" type="button" onClick={toggleApiKeyVisibility} className="cursor-pointer">
                       {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </motion.div>
@@ -118,7 +123,7 @@ export default function ChatInput({ showApiKeyInput = false }: ChatInputProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.2 }} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button variant="outline" size="icon" onClick={clearResponse} disabled={isLoading}>
+                  <Button variant="outline" size="icon" onClick={clearResponse} disabled={isLoading} className="cursor-pointer">
                     <RotateCcw className="h-4 w-4" />
                   </Button>
                 </motion.div>
