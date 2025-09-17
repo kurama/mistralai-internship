@@ -7,7 +7,7 @@ import { BookOpenText, Github } from 'lucide-react'
 
 const navigationItems = [
   {
-    href: 'https://github.com/kurama',
+    href: 'https://github.com/kurama/mistralai-internship',
     icon: <Github color="white" />,
     tooltip: 'GitHub',
     delay: 0.4,
