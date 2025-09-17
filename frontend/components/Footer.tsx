@@ -14,7 +14,7 @@ export default function Footer() {
         delay: 1.2,
       }}
     >
-      Made with 🧡 by{' '}
+      Made with ♥ by{' '}
       <a className="hover:underline hover:text-primary pointer-events-auto" href="https://github.com/kurama" target="_blank">
         Dorian Grasset
       </a>

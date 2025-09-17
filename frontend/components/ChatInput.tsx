@@ -8,6 +8,7 @@ import { useChat } from '@/hooks/useChat'
 import { Input } from './ui/input'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import { useState } from 'react'
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
 
 interface ChatInputProps {
   showApiKeyInput?: boolean
@@ -63,7 +64,7 @@ export default function ChatInput({ showApiKeyInput = false }: ChatInputProps) {
       />
 
       {/* Input area */}
-      <form onSubmit={handleSubmit} className="bg-muted p-4 flex flex-col rounded-2xl gap-4 w-full sm:w-[400px] md:w-[600px] pointer-events-auto">
+      <form onSubmit={handleSubmit} className="bg-muted p-4 flex flex-col rounded-2xl gap-4 w-full md:w-[600px] pointer-events-auto">
         <AutosizeTextarea
           placeholder="Ask anything"
           className="w-full border-0 bg-muted text-white resize-none"
@@ -77,16 +78,28 @@ export default function ChatInput({ showApiKeyInput = false }: ChatInputProps) {
         <div className="w-full flex justify-end gap-2">
           {showApiKeyInput && (
             <>
-              <Tooltip>
-                <TooltipTrigger asChild>
+              <Dialog>
+                <DialogTrigger asChild>
                   <motion.div whileHover={!isLoading ? { scale: 1.05 } : {}} whileTap={!isLoading ? { scale: 0.95 } : {}}>
                     <Button variant="outline" size="icon" type="button">
                       <Info className="h-4 w-4" />
                     </Button>
                   </motion.div>
-                </TooltipTrigger>
-                <TooltipContent>Enter your Mistral API key for unlimited access</TooltipContent>
-              </Tooltip>
+                </DialogTrigger>
+                <DialogContent className="">
+                  <DialogHeader>
+                    <DialogTitle>API Key Information</DialogTitle>
+                    <DialogDescription>Provide your personal Mistral API key to enjoy unlimited conversations without rate limits.</DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter className="sm:justify-start">
+                    <DialogClose asChild>
+                      <Button type="button" variant="secondary">
+                        Close
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <motion.div whileHover={!isLoading ? { scale: 1.05 } : {}} whileTap={!isLoading ? { scale: 0.95 } : {}}>
@@ -118,7 +131,7 @@ export default function ChatInput({ showApiKeyInput = false }: ChatInputProps) {
           <Tooltip>
             <TooltipTrigger asChild>
               <motion.div whileHover={!isLoading ? { scale: 1.05 } : {}} whileTap={!isLoading ? { scale: 0.95 } : {}}>
-                <Button type="submit" variant="default" size="icon" disabled={isLoading || !message.trim()}>
+                <Button type="submit" variant="default" size="icon" disabled={isLoading || !message.trim()} className="cursor-pointer">
                   {isLoading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 </Button>
               </motion.div>
