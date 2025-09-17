@@ -17,12 +17,18 @@ mistralai-internship/
 │   └── workflows/
 │       ├── backend.yml
 │       └── frontend.yml
-├── frontend/          # Next.js React application
-├── backend/           # Go API server
+├── frontend/          # Next.js React application with API routes for auth & user management
+├── backend/           # Go API server for chat functionality (SDK) and rate limiting
 ├── postgres/          # PostgreSQL initialization scripts
 ├── chart/             # Helm chart for Kubernetes deployment
 └── docker-compose.yml # Local development setup
 ```
+
+This project consists of:
+- **Frontend**: Next.js application with NextAuth.js for GitHub authentication, user API key management, and internal API routes
+- **Backend**: Go API server that handles chat requests, integrates with Mistral AI, manages rate limiting for anonymous users, and connects to PostgreSQL
+- **Database**: PostgreSQL with user management, API key storage, and rate limiting tables
+- **Deployment**: Kubernetes cluster on VPS using Helm charts with GitHub Actions & Argo CD
 
 ## Local Development
 
@@ -39,9 +45,30 @@ git clone https://github.com/kurama/mistralai-internship
 cd mistralai-internship
 ```
 
-### 2. Environment Configuration
+### 2. Environment Configuration & Required Secrets
 
-Create `.env` files in each directory using the examples provided:
+#### NextAuth Secret
+
+Generate a secure secret for NextAuth:
+
+```bash
+openssl rand -base64 32
+```
+
+> Save this value for later use in the frontend `.env` file.
+
+#### GitHub OAuth Application
+
+1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
+2. Click "New OAuth App"
+3. Fill in the application details:
+   - **Application name**: Mistral AI Chatbot (Local)
+   - **Homepage URL**: `http://localhost:3000`
+   - **Authorization callback URL**: `http://localhost:3000/api/auth/callback/github`
+4. Click "Register application"
+5. Copy the **Client ID** and generate a new client secret
+
+> Save these values for later use in the frontend `.env` file.
 
 #### Frontend Configuration (`frontend/.env`)
 
@@ -60,6 +87,15 @@ NEXTAUTH_SECRET=your_nextauth_secret_here
 NEXTAUTH_URL=http://localhost:3000
 DATABASE_URL=postgresql://postgresuser:postgrespassword@mistral-postgres:5432/mistralai?schema=public
 ```
+
+#### Mistral API Key
+
+1. Go to [Mistral AI Console](https://console.mistral.ai/)
+2. Sign up or log in to your account
+3. Navigate to "API Keys" section
+4. Create a new API key
+
+> Save this value for later use in the backend `.env` file.
 
 #### Backend Configuration (`backend/.env`)
 
@@ -90,65 +126,32 @@ POSTGRES_DB=mistralai
 
 ⚠️ **Important**: Make sure the database credentials match across all `.env` files.
 
-### 3. Generate Required Secrets
-
-#### NextAuth Secret
-
-Generate a secure secret for NextAuth:
-
-```bash
-openssl rand -base64 32
-```
-
-Copy the output and paste it as `NEXTAUTH_SECRET` in `frontend/.env`.
-
-#### GitHub OAuth Application
-
-1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
-2. Click "New OAuth App"
-3. Fill in the application details:
-   - **Application name**: Mistral AI Chatbot (Local)
-   - **Homepage URL**: `http://localhost:3000`
-   - **Authorization callback URL**: `http://localhost:3000/api/auth/callback/github`
-4. Click "Register application"
-5. Copy the **Client ID** to `GITHUB_CLIENT_ID` in `frontend/.env`
-6. Generate a new client secret and copy it to `GITHUB_CLIENT_SECRET` in `frontend/.env`
-
-#### Mistral API Key
-
-1. Go to [Mistral AI Console](https://console.mistral.ai/)
-2. Sign up or log in to your account
-3. Navigate to "API Keys" section
-4. Create a new API key
-5. Copy the key and paste it as `MISTRAL_API_KEY` in `backend/.env`
-
-### 4. Launch the Application
+### 3. Launch and Verify Installation
 
 Start all services with Docker Compose:
 
 ```bash
-docker-compose up -d
+docker compose up --build -d
 ```
 
+Test the API health endpoint first:
+
+```bash
+curl http://localhost:8080/health
+```
+
+Check if all services are running:
+
+```bash
+docker compose ps
+```
+
+If everything is set up correctly, you should see all services listed as "Up".
 The application will be available at:
 
 - Frontend: [http://localhost:3000](http://localhost:3000)
 - Backend API: [http://localhost:8080](http://localhost:8080)
 - Database: `localhost:5432`
-
-### 5. Verify Installation
-
-Check if all services are running:
-
-```bash
-docker-compose ps
-```
-
-Test the API health endpoint:
-
-```bash
-curl http://localhost:8080/health
-```
 
 ## Kubernetes Deployment (chart/)
 
@@ -180,4 +183,4 @@ The project includes automated CI/CD pipelines using GitHub Actions:
   - Creates Docker image
   - Pushes to Docker Hub: [`rapidement/mistralai-internship-backend`](https://hub.docker.com/repository/docker/rapidement/mistralai-internship-backend/general)
 
-The images are then used by Argo CD to automatically deploy updates to the Kubernetes cluster when new versions are pushed to the repositories.
+The images are then used by Argo CD to automatically deploy updates to the Kubernetes cluster when new versions are pushed to the repository.
