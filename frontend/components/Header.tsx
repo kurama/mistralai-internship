@@ -16,18 +16,10 @@ interface HeaderProps {
 
 export default function Header({ onLogout, onLogin, onHome }: HeaderProps) {
   return (
-    <motion.header
-      className="z-10 absolute top-0 p-4 flex flex-row justify-end sm:justify-between items-center w-full"
-      initial={{ y: -50, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{
-        duration: 0.8,
-        ease: 'easeOut',
-      }}
-    >
+    <header className="z-10 absolute top-0 p-4 flex sm:flex-row flex-col gap-4 sm:gap-0 justify-evenly sm:justify-between items-center w-full">
       <motion.div
-        className="flex-row gap-4 items-center hidden sm:flex"
-        initial={{ x: -30, opacity: 0 }}
+        className="flex-row gap-4 items-center sm:flex"
+        initial={{ x: -50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{
           duration: 0.6,
@@ -107,6 +99,6 @@ export default function Header({ onLogout, onLogin, onHome }: HeaderProps) {
           </motion.div>
         )}
       </div>
-    </motion.header>
+    </header>
   )
 }

@@ -3,20 +3,26 @@
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { motion } from 'framer-motion'
-import { BookOpenText, Github } from 'lucide-react'
+import { BookOpenText, Earth, Github } from 'lucide-react'
 
 const navigationItems = [
+  {
+    href: 'https://dorian.grasset.dev',
+    icon: <Earth color="white" />,
+    tooltip: 'My Website',
+    delay: 0.4,
+  },
   {
     href: 'https://github.com/kurama/mistralai-internship',
     icon: <Github color="white" />,
     tooltip: 'GitHub',
-    delay: 0.4,
+    delay: 0.6,
   },
   {
     href: 'https://docs.mistral.ai/',
     icon: <BookOpenText color="white" />,
     tooltip: 'Documentation',
-    delay: 0.6,
+    delay: 0.8,
   },
   {
     href: 'https://chat.mistral.ai/chat',
@@ -29,7 +35,7 @@ const navigationItems = [
       </svg>
     ),
     tooltip: 'Le Chat',
-    delay: 0.8,
+    delay: 1.0,
   },
 ]
 
