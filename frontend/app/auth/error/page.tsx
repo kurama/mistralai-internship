@@ -7,6 +7,7 @@ import Header from '@/components/Header'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Home } from 'lucide-react'
+import Loading from '@/components/Loading'
 
 const errorMessages: Record<string, { title: string; description: string }> = {
   Configuration: {
@@ -110,21 +111,9 @@ function AuthErrorContent() {
   )
 }
 
-function LoadingFallback() {
-  return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function AuthError() {
   return (
-    <Suspense fallback={<LoadingFallback />}>
+    <Suspense fallback={<Loading />}>
       <AuthErrorContent />
     </Suspense>
   )

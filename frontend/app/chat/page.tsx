@@ -6,6 +6,7 @@ import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import Chat from '@/components/Chat'
+import Loading from '@/components/Loading'
 
 export default function ChatPage() {
   const { status } = useSession()
@@ -22,11 +23,7 @@ export default function ChatPage() {
   }, [status, router])
 
   if (status === 'loading') {
-    return (
-      <div className="flex min-h-dvh w-full items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-      </div>
-    )
+    return <Loading />
   }
 
   if (status === 'unauthenticated') {
