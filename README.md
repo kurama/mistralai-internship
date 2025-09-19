@@ -88,6 +88,8 @@ NEXTAUTH_URL=http://localhost:3000
 DATABASE_URL=postgresql://postgresuser:postgrespassword@mistral-postgres:5432/mistralai?schema=public
 ```
 
+> Replace the GitHub and NextAuth secrets with the values you generated earlier.
+
 #### Mistral API Key
 
 1. Go to [Mistral AI Console](https://console.mistral.ai/)
@@ -109,6 +111,8 @@ Edit `backend/.env` with your values:
 MISTRAL_API_KEY=your_mistral_api_key_here
 DATABASE_URL=postgresql://postgresuser:postgrespassword@mistral-postgres:5432/mistralai?sslmode=disable
 ```
+
+> Replace the Mistral API key with the value you obtained earlier.
 
 #### PostgreSQL Configuration (`postgres/.env`)
 
@@ -152,6 +156,14 @@ The application will be available at:
 - Frontend: [http://localhost:3000](http://localhost:3000)
 - Backend API: [http://localhost:8080](http://localhost:8080)
 - Database: `localhost:5432`
+
+### 4. Stop the project
+
+To stop the services, run:
+
+```bash
+docker compose down
+```
 
 ## Kubernetes Deployment (chart/)
 
